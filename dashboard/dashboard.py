@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # Load dataset
-day_data = pd.read_csv('day.csv')
+day_data = pd.read_csv('data/day.csv')
 
 
 # Dashboard Title
