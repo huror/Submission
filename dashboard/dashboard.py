@@ -5,19 +5,7 @@ import seaborn as sns
 
 
 # Load dataset
-day_data = pd.read_csv(r'D:\UNS FORM\Perkuliahan duniawi\SEMESTER 5\SUBMISSION\data\day.csv')
-
-
-# Transform columns to categorical labels
-day_data['season'] = day_data['season'].replace({1: 'Winter', 2: 'Spring', 3: 'Summer', 4: 'Fall'})
-day_data['holiday'] = day_data['holiday'].replace({0: 'No Holiday', 1: 'Holiday'})
-day_data['workingday'] = day_data['workingday'].replace({0: 'Non-Working Day', 1: 'Working Day'})
-day_data['weathersit'] = day_data['weathersit'].replace({
-    1: 'Clear',
-    2: 'Mist/Cloudy',
-    3: 'Light Snow/Rain',
-    4: 'Heavy Rain/Snow'
-})
+day_data = pd.read_csv('D:/UNS FORM/Perkuliahan duniawi/SEMESTER 5/bangkit/data/day.csv')
 
 # Sidebar filters
 st.sidebar.header("Filter Data")
