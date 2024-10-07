@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # Load dataset
-day_data = pd.read_csv('D:/UNS FORM/Perkuliahan duniawi/SEMESTER 5/bangkit/data/day.csv')
+day_data = pd.read_csv('day.csv')
 
 # Dashboard Title
 st.title("Bike Rentals Analysis Dashboard")
