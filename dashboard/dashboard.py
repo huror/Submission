@@ -5,7 +5,7 @@ import seaborn as sns
 
 
 # Load dataset
-day_data = pd.read_csv('bangkit/data/day.csv')
+day_data = pd.read_csv('data/day.csv')
 
 # Sidebar filters
 st.sidebar.header("Filter Data")
