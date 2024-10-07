@@ -5,7 +5,7 @@ import seaborn as sns
 
 
 # Load dataset
-day_data = pd.read_csv('D:/UNS FORM/Perkuliahan duniawi/SEMESTER 5/bangkit/data/day.csv')
+day_data = pd.read_csv(r'D:/UNS FORM/Perkuliahan duniawi/SEMESTER 5/bangkit/data/day.csv')
 
 # Sidebar filters
 st.sidebar.header("Filter Data")
