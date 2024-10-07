@@ -1,31 +1,105 @@
-# dashboard.py
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+
 # Load dataset
-day_data = pd.read_csv('day.csv')
+day_data = pd.read_csv(r'D:\UNS FORM\Perkuliahan duniawi\SEMESTER 5\SUBMISSION\data\day.csv')
 
-# Dashboard Title
-st.title("Bike Rentals Analysis Dashboard")
 
-# Pertanyaan 1: Visualisasi penggunaan sepeda per musim
-st.header("Average Bike Rentals by Season")
-seasonal_avg_cnt = day_data.groupby('season')['cnt'].mean().reset_index()
+# Transform columns to categorical labels
+day_data['season'] = day_data['season'].replace({1: 'Winter', 2: 'Spring', 3: 'Summer', 4: 'Fall'})
+day_data['holiday'] = day_data['holiday'].replace({0: 'No Holiday', 1: 'Holiday'})
+day_data['workingday'] = day_data['workingday'].replace({0: 'Non-Working Day', 1: 'Working Day'})
+day_data['weathersit'] = day_data['weathersit'].replace({
+    1: 'Clear',
+    2: 'Mist/Cloudy',
+    3: 'Light Snow/Rain',
+    4: 'Heavy Rain/Snow'
+})
+
+# Sidebar filters
+st.sidebar.header("Filter Data")
+start_date = st.sidebar.date_input("Start Date", pd.to_datetime(day_data['dteday'].min()))
+end_date = st.sidebar.date_input("End Date", pd.to_datetime(day_data['dteday'].max()))
+
+# Season and Weather filters
+selected_season = st.sidebar.multiselect(
+    "Select Season",
+    options=day_data['season'].unique(),
+    default=day_data['season'].unique()
+)
+
+selected_weather = st.sidebar.multiselect(
+    "Select Weather Condition",
+    options=day_data['weathersit'].unique(),
+    default=day_data['weathersit'].unique()
+)
+
+# Apply filters
+filtered_data = day_data[
+    (pd.to_datetime(day_data['dteday']) >= pd.to_datetime(start_date)) &
+    (pd.to_datetime(day_data['dteday']) <= pd.to_datetime(end_date)) &
+    (day_data['season'].isin(selected_season)) &
+    (day_data['weathersit'].isin(selected_weather))
+]
+
+# Dashboard title
+st.title("Bike Sharing Usage Analysis - Interactive Dashboard")
+st.write(f"Data from {start_date} to {end_date}")
+
+# Pertanyaan 1: Bagaimana kondisi peminjaman sepeda berdasarkan musim?
+st.subheader("Pertanyaan 1: Bagaimana kondisi peminjaman sepeda berdasarkan musim?")
+season_data = filtered_data.groupby('season')['cnt'].sum().reset_index()
+
 fig, ax = plt.subplots()
-sns.barplot(x='season', y='cnt', data=seasonal_avg_cnt, ax=ax, palette='Blues_d')
-ax.set_title('Average Bike Rentals by Season')
-ax.set_xlabel('Season (1: Spring, 2: Summer, 3: Fall, 4: Winter)')
-ax.set_ylabel('Average Bike Rentals')
+sns.barplot(x='season', y='cnt', data=season_data, ax=ax)
+ax.set_title("Total Rentals per Season")
+ax.set_xlabel("Season")
+ax.set_ylabel("Total Rentals")
 st.pyplot(fig)
 
-# Pertanyaan 2: Visualisasi penggunaan sepeda di hari kerja vs hari libur
-st.header("Average Bike Rentals on Working Days vs Non-working Days")
-workingday_avg_cnt = day_data.groupby('workingday')['cnt'].mean().reset_index()
+# Pertanyaan 2: Bagaimana pengaruh kondisi cuaca terhadap peminjaman sepeda?
+st.subheader("Pertanyaan 2: Bagaimana pengaruh kondisi cuaca terhadap peminjaman sepeda?")
+weather_data = filtered_data.groupby('weathersit')['cnt'].sum().reset_index()
+
 fig, ax = plt.subplots()
-sns.barplot(x='workingday', y='cnt', data=workingday_avg_cnt, ax=ax, palette='coolwarm')
-ax.set_title('Average Bike Rentals on Working Days vs Non-working Days')
-ax.set_xlabel('Working Day (0: Non-working Day, 1: Working Day)')
-ax.set_ylabel('Average Bike Rentals')
+sns.barplot(x='weathersit', y='cnt', data=weather_data, ax=ax)
+ax.set_title("Total Rentals by Weather Condition")
+ax.set_xlabel("Weather Condition")
+ax.set_ylabel("Total Rentals")
+st.pyplot(fig)
+
+# Pertanyaan 3: Apakah suhu mempengaruhi jumlah peminjaman sepeda?
+st.subheader("Pertanyaan 3: Apakah suhu mempengaruhi jumlah peminjaman sepeda?")
+fig, ax = plt.subplots()
+sns.scatterplot(x='temp', y='cnt', data=filtered_data, ax=ax)
+ax.set_title("Temperature vs. Total Rentals")
+ax.set_xlabel("Normalized Temperature")
+ax.set_ylabel("Total Rentals")
+st.pyplot(fig)
+
+# Analisis Lanjutan: Penggunaan sepeda berdasarkan hari kerja dan hari libur
+st.subheader("Analisis Lanjutan: Penggunaan sepeda berdasarkan hari kerja dan hari libur")
+workingday_data = filtered_data.groupby('workingday')['cnt'].sum().reset_index()
+
+fig, ax = plt.subplots()
+sns.barplot(x='workingday', y='cnt', data=workingday_data, ax=ax)
+ax.set_title("Total Rentals by Working Day Status")
+ax.set_xlabel("Working Day Status")
+ax.set_ylabel("Total Rentals")
+st.pyplot(fig)
+
+# Analisis Lanjutan: Total Peminjaman per Bulan
+st.subheader("Analisis Lanjutan: Total Peminjaman Sepeda per Bulan")
+monthly_data = filtered_data.groupby('mnth')['cnt'].sum().reset_index()
+
+fig, ax = plt.subplots()
+ax.plot(monthly_data['mnth'], monthly_data['cnt'], marker='o')
+ax.set_title("Total Rentals per Month")
+ax.set_xlabel("Month")
+ax.set_ylabel("Total Rentals")
+ax.set_xticks(range(1, 13))
+ax.set_xticklabels(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'])
 st.pyplot(fig)
