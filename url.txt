@@ -1,1 +1,1 @@
-https://bike-sharing-bangkit.streamlit.app/
+https://bikerental1.streamlit.app/
